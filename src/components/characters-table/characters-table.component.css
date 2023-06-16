@@ -1,0 +1,8 @@
+.character-name {
+  margin-left: 20%;
+}
+
+.container > div {
+  display: inline-block;
+  /* margin-right: 10px; */
+}

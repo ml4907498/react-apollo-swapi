@@ -1,5 +1,5 @@
-import React from 'react';
-import CharactersGrid from '../../components/characters-grid/characters-grid.components';
+import React, { useState } from 'react';
+import CharactersTable from '../../components/characters-table/characters-table.component';
 import { Character } from '../../common/interfaces/character.interface';
 
 const Home: React.FC = () => {
@@ -14,11 +14,27 @@ const Home: React.FC = () => {
       eyeColor: 'test',
       homeworld: 'test',
     },
+    {
+      id: 'test',
+      name: 'Fray',
+      height: 180,
+      mass: 180,
+      species: 'test',
+      gender: 'test',
+      eyeColor: 'test',
+      homeworld: 'test',
+    },
   ];
+
+  const [favoritCharsList, setFavoritCharsList] = useState<string[]>(['Fray']);
 
   return (
     <div className="home">
-      <CharactersGrid characters={characters} />
+      <CharactersTable
+        characters={characters}
+        favoritCharsList={favoritCharsList}
+        setFavoritCharsList={setFavoritCharsList}
+      />
     </div>
   );
 };

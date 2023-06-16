@@ -8,3 +8,5 @@ export interface Character {
   eyeColor: string;
   homeworld: string;
 }
+
+//加？表示可选
