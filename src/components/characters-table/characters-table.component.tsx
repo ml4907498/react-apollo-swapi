@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Table, Button, Space } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
-import { HeartFilled, HeartOutlined } from '@ant-design/icons';
 
 import './characters-table.component.css';
 import { Character } from '../../common/interfaces/character.interface';
 
 import FavoriteButton from '../favorite-button/favorite-button.component';
+import CharacterCard from '../character-card/character-card.component';
 
 interface CharactersTableProps {
   characters: Character[];
@@ -23,21 +23,35 @@ const onChange: TableProps<Character>['onChange'] = (
   console.log('params', pagination, filters, sorter, extra);
 };
 
-const generateColumns = (
-  props: CharactersTableProps,
-): ColumnsType<Character> => {
-  return [
+const CharactersTable: React.FC<CharactersTableProps> = ({
+  characters,
+  favoritCharsList,
+  setFavoritCharsList,
+}: CharactersTableProps) => {
+  const [ifShowCard, setIfShowCard] = useState<boolean>(false);
+  const [currCharacter, setCurrCharacter] = useState<Character | null>(null);
+
+  const showCharacterCard = (id) => {
+    setIfShowCard(!ifShowCard);
+
+    //todo - get data from sever
+    setCurrCharacter(characters[id === 'test' ? 0 : 1]);
+  };
+
+  const columns: ColumnsType<Character> = [
     {
       title: 'Name',
       dataIndex: 'name',
       render: (text, record) => (
-        <div className="container">
+        <div className="row-container">
           <FavoriteButton
             id={text}
-            favoriteList={props.favoritCharsList}
-            setFavoritList={props.setFavoritCharsList}
+            favoriteList={favoritCharsList}
+            setFavoritList={setFavoritCharsList}
           />
-          <a className="character-name">{text}</a>
+          <a className="character-name" onClick={() => showCharacterCard(text)}>
+            {text}
+          </a>
         </div>
       ),
       filters: [
@@ -127,26 +141,27 @@ const generateColumns = (
       // onFilter: (value: string, record) => record.homeworld.indexOf(value) === 0,
     },
   ];
-};
-
-const CharactersTable: React.FC<CharactersTableProps> = ({
-  characters,
-  favoritCharsList,
-  setFavoritCharsList,
-}: CharactersTableProps) => {
-  const columns = generateColumns({
-    characters,
-    favoritCharsList,
-    setFavoritCharsList,
-  });
 
   return (
-    <>
+    <div className="table-container">
       <Space style={{ margin: 16 }}>
         <Button>Favorite Mod</Button>
       </Space>
       <Table columns={columns} dataSource={characters} onChange={onChange} />
-    </>
+
+      {ifShowCard && (
+        <div className="character-card-overlay">
+          <div className="character-card-container">
+            <CharacterCard
+              character={currCharacter}
+              favoritCharsList={favoritCharsList}
+              setFavoritCharsList={setFavoritCharsList}
+              setIfShowCard={setIfShowCard}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
