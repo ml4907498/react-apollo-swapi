@@ -1,8 +1,32 @@
 import React, { useState } from 'react';
 import CharactersTable from '../../components/characters-table/characters-table.component';
 import { Character } from '../../common/interfaces/character.interface';
+// import { useGetCharacters } from '../../hooks/characters/useGetCharacters';
+
+import { graphql } from '../../../src/gql';
+import { useQuery } from '@apollo/client';
+import Film from './film';
 
 const Home: React.FC = () => {
+  // const chars = useGetCharacters();
+  // console.log(chars);
+
+  // const allFilmsWithVariablesQueryDocument = graphql(/* GraphQL */ `
+  //   query allFilmsWithVariablesQuery($first: Int!) {
+  //     allPeople(first: $first) {
+  //       edges {
+  //         node {
+  //           ...PersonItem
+  //         }
+  //       }
+  //     }
+  //   }
+  // `);
+  // const { data } = useQuery(allFilmsWithVariablesQueryDocument, {
+  //   variables: { first: 10 },
+  // });
+
+  // console.log(data);
   const characters: Character[] = [
     {
       id: 'test',
@@ -10,8 +34,8 @@ const Home: React.FC = () => {
       height: 180,
       mass: 180,
       species: 'test',
-      gender: 'test',
-      eyeColor: 'test',
+      gender: 'Male',
+      eyeColor: 'Blue',
       homeworld: 'test',
     },
     {
@@ -20,8 +44,8 @@ const Home: React.FC = () => {
       height: 180,
       mass: 180,
       species: 'test',
-      gender: 'test',
-      eyeColor: 'test',
+      gender: 'Female',
+      eyeColor: 'Brown',
       homeworld: 'test',
     },
   ];
@@ -37,6 +61,17 @@ const Home: React.FC = () => {
       />
     </div>
   );
+  // return (
+  //   <div className="App">
+  //     {data && (
+  //       <ul>
+  //         {data.allPeople?.edges?.map(
+  //           (e, i) => e?.node && <Film film={e?.node} key={`film-${i}`} />,
+  //         )}
+  //       </ul>
+  //     )}
+  //   </div>
+  // );
 };
 
 export default Home;

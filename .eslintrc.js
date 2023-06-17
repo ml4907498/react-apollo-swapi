@@ -15,7 +15,7 @@ module.exports = {
         "sourceType": "module"
     },
     root: true,
-    ignorePatterns: ['.eslintrc.js'],
+    ignorePatterns: ['.eslintrc.js', 'src/gql/'],
     "rules": {
     }
 }

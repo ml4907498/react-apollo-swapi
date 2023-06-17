@@ -80,12 +80,13 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
         },
         {
           text: 'Female',
-          value: 'Male',
+          value: 'Female',
         },
       ],
       // specify the condition of filtering result
       // here is that finding the name started with `value`
-      // onFilter: (value: string, record) => record.gender.indexOf(value) === 0,
+      onFilter: (value, record: Character) =>
+        record.gender.indexOf(value as string) === 0,
       // sorter: (a, b) => a.gender.length - b.gender.length,
       // sortDirections: ['descend'],
     },
@@ -115,15 +116,16 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
       dataIndex: 'eyeColor',
       filters: [
         {
-          text: 'London',
-          value: 'London',
+          text: 'Blue',
+          value: 'Blue',
         },
         {
-          text: 'New York',
-          value: 'New York',
+          text: 'Brown',
+          value: 'Brown',
         },
       ],
-      // onFilter: (value: string, record) => record.eyeColor.indexOf(value) === 0,
+      onFilter: (value, record: Character) =>
+        record.eyeColor.indexOf(value as string) === 0,
     },
     {
       title: 'Home Planet',
