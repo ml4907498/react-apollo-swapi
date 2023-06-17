@@ -8,6 +8,7 @@ export const getCharacters = (): Character[] => {
   data &&
     data.allPeople?.edges?.map((e, i) => {
       const node = e?.node;
+      console.log(node);
       const character = {
         ...node,
         homeworld:

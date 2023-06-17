@@ -11,4 +11,9 @@ fragment PersonItem on Person {
   height
   gender
   eyeColor
+  filmConnection {
+    films {
+      title
+    }
+  }
 }

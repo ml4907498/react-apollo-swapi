@@ -19,6 +19,10 @@ export const processCharacterData = (
     height: person?.height === undefined ? '-' : person?.height,
     eyeColor: person?.eyeColor === undefined ? '-' : person?.eyeColor,
     name: person?.name === undefined ? '-' : person?.name,
+    films:
+      person?.filmConnection?.films === undefined
+        ? '-'
+        : person?.filmConnection?.films?.map((v) => v?.title),
   };
   return character as Character;
 };

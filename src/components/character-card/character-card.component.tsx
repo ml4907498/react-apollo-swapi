@@ -53,7 +53,9 @@ const CharacterCard: React.FC<CharactersCardProps> = ({
         {character && (
           <>
             <Meta
-              // avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=2" />}
+              avatar={
+                <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=2" />
+              }
               title={character.name}
               // description="This is the description"
             />
@@ -84,8 +86,14 @@ const CharacterCard: React.FC<CharactersCardProps> = ({
               </div>
               <div className="data-item">
                 <span className="label">Movies:</span>
-                {/* <span className="value">{character.homeworld}</span> */}
               </div>
+              <div className="data-item">
+                <span className="label"></span>
+              </div>
+              <ul>
+                {character.films &&
+                  character.films.map((v) => <li key={v}>{v}</li>)}
+              </ul>
             </div>
           </>
         )}

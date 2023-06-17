@@ -1305,21 +1305,21 @@ export type VehiclesEdge = {
   node?: Maybe<Vehicle>;
 };
 
-export type PersonItemFragment = { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null };
+export type PersonItemFragment = { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null, filmConnection?: { __typename?: 'PersonFilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null };
 
 export type GetCharacterByIdQueryVariables = Exact<{
   personID?: InputMaybe<Scalars['ID']['input']>;
 }>;
 
 
-export type GetCharacterByIdQuery = { __typename?: 'Root', person?: { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null } | null };
+export type GetCharacterByIdQuery = { __typename?: 'Root', person?: { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null, filmConnection?: { __typename?: 'PersonFilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null } | null };
 
 export type GetCharactersQueryVariables = Exact<{
   first: Scalars['Int']['input'];
 }>;
 
 
-export type GetCharactersQuery = { __typename?: 'Root', allPeople?: { __typename?: 'PeopleConnection', edges?: Array<{ __typename?: 'PeopleEdge', node?: { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null } | null } | null> | null } | null };
+export type GetCharactersQuery = { __typename?: 'Root', allPeople?: { __typename?: 'PeopleConnection', edges?: Array<{ __typename?: 'PeopleEdge', node?: { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null, filmConnection?: { __typename?: 'PersonFilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null } | null } | null> | null } | null };
 
 export const PersonItemFragmentDoc = gql`
     fragment PersonItem on Person {
@@ -1335,6 +1335,11 @@ export const PersonItemFragmentDoc = gql`
   height
   gender
   eyeColor
+  filmConnection {
+    films {
+      title
+    }
+  }
 }
     `;
 export const GetCharacterByIdDocument = gql`

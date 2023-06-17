@@ -7,4 +7,5 @@ export interface Character {
   height?: number;
   gender?: string;
   eyeColor?: string;
+  films?: string[];
 }
