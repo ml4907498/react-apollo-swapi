@@ -1,14 +1,36 @@
-import { useGetCharactersQuery } from '../../graphql/__generated__/schema';
+import {
+  useGetCharactersQuery,
+  useGetCharactersLazyQuery,
+  GetCharactersQueryHookResult,
+} from '../../graphql/__generated__/schema';
 import { Character } from '../../common/interfaces/character.interface';
 
 export const getCharacters = (): Character[] => {
-  const { data } = useGetCharactersQuery({ variables: { first: 10 } });
+  const data = useGetCharactersQuery({ variables: { first: 10 } });
+  return processCharactersData(data);
+};
+
+export const getCharactersLazy = () => {
+  const [getCharacters] = useGetCharactersLazyQuery();
+
+  return async (): Promise<Character[]> => {
+    const data = await getCharacters({ variables: { first: 10 } });
+    // console.log(data);
+    const charList = processCharactersData(data);
+    // console.log('lazy:', char);
+    return charList;
+  };
+};
+
+const processCharactersData = (
+  data: GetCharactersQueryHookResult,
+): Character[] => {
   const characters: Character[] = [];
 
   data &&
-    data.allPeople?.edges?.map((e, i) => {
+    data.data?.allPeople?.edges?.map((e, i) => {
       const node = e?.node;
-      console.log(node);
+      // console.log(node);
       const character = {
         ...node,
         homeworld:

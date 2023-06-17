@@ -9,14 +9,14 @@ import { Character } from '../../common/interfaces/character.interface';
 import FavoriteButton from '../favorite-button/favorite-button.component';
 import CharacterCard from '../character-card/character-card.component';
 
-import { getCharacters } from '../../hooks/characters/getCharacters';
+import { getCharactersLazy } from '../../hooks/characters/getCharacters';
 import { getCharacterByIdLazy } from '../../hooks/characters/getCharacterById';
 
-interface CharactersTableProps {
-  characters: Character[];
-  favoritCharsList: string[];
-  setFavoritCharsList: (newValue: string[]) => void;
-}
+// interface CharactersTableProps {
+//   characters: Character[];
+//   favoritCharsList: string[];
+//   setFavoritCharsList: (newValue: string[]) => void;
+// }
 const onChange: TableProps<Character>['onChange'] = (
   pagination,
   filters,
@@ -26,19 +26,31 @@ const onChange: TableProps<Character>['onChange'] = (
   console.log('params', pagination, filters, sorter, extra);
 };
 
-const CharactersTable: React.FC<CharactersTableProps> = ({
-  characters,
-  favoritCharsList,
-  setFavoritCharsList,
-}: CharactersTableProps) => {
+const CharactersTable: React.FC = () => {
   const [ifShowCard, setIfShowCard] = useState<boolean>(false);
   const [currCharacter, setCurrCharacter] = useState<Character | null>(null);
+  const [favoritCharsList, setFavoritCharsList] = useState<string[]>(
+    JSON.parse(localStorage.getItem('favoriteItems') || '[]'),
+  );
+  const [ifFavoriteOnly, setIfFavoriteOnly] = useState<boolean>(false);
+  const [currTableData, setCurrTableData] = useState<Character[]>([]);
+  const [prevTableData, setPrevTableData] = useState<Character[]>([]);
 
-  // const data = getCharacterById('cGVvcGxlOjE=');
-  // console.log(data);
-
-  // const [getCharacterById] = useGetCharacterByIdLazyQuery();
   const getCharacterById = getCharacterByIdLazy();
+  const getCharacters = getCharactersLazy();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const initData = await getCharacters();
+      setCurrTableData(initData);
+      console.log('init', initData);
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log('hhh');
+  }, [currTableData]);
 
   const showCharacterCard = async (id) => {
     setCurrCharacter(null);
@@ -49,6 +61,31 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
     console.log('lazy:', char);
     setCurrCharacter(char);
   };
+
+  const switchFavoriteOnly = () => {
+    if (!ifFavoriteOnly) {
+      const favoritChars: Character[] = [];
+      const promises = favoritCharsList.map(async (id) => {
+        const char = await getCharacterById(id);
+        favoritChars.push(char);
+        console.log(favoritChars);
+        console.log(ifFavoriteOnly);
+      });
+      Promise.all(promises).then(() => {
+        setPrevTableData(currTableData);
+        setCurrTableData(favoritChars);
+      });
+    } else {
+      setCurrTableData(prevTableData);
+      console.log(prevTableData);
+    }
+    setIfFavoriteOnly(!ifFavoriteOnly);
+  };
+
+  useEffect(() => {
+    localStorage.setItem('favoriteItems', JSON.stringify(favoritCharsList));
+    console.log(localStorage.getItem('favoriteItems'));
+  }, [favoritCharsList]);
 
   const columns: ColumnsType<Character> = [
     {
@@ -178,13 +215,9 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
   return (
     <div className="table-container">
       <Space style={{ margin: 16 }}>
-        <Button>Favorite Mod</Button>
+        <Button onClick={switchFavoriteOnly}>Favorite Mod</Button>
       </Space>
-      <Table
-        columns={columns}
-        dataSource={getCharacters()}
-        onChange={onChange}
-      />
+      <Table columns={columns} dataSource={currTableData} onChange={onChange} />
 
       {ifShowCard && (
         <div className="character-card-overlay">
