@@ -1,0 +1,14 @@
+fragment PersonItem on Person {
+  id
+  name
+  mass
+  homeworld {
+    name
+  }
+  species {
+    name
+  }
+  height
+  gender
+  eyeColor
+}

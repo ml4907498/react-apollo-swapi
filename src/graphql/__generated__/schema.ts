@@ -1,5 +1,5 @@
-/* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -7,6 +7,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string | number; output: string; }
@@ -1304,6 +1305,109 @@ export type VehiclesEdge = {
   node?: Maybe<Vehicle>;
 };
 
-export type PersonItemFragment = { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, gender?: string | null, height?: number | null } & { ' $fragmentName'?: 'PersonItemFragment' };
+export type PersonItemFragment = { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null };
 
-export const PersonItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PersonItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"mass"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"height"}}]}}]} as unknown as DocumentNode<PersonItemFragment, unknown>;
+export type GetCharacterByIdQueryVariables = Exact<{
+  personID?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+
+export type GetCharacterByIdQuery = { __typename?: 'Root', person?: { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null } | null };
+
+export type GetCharactersQueryVariables = Exact<{
+  first: Scalars['Int']['input'];
+}>;
+
+
+export type GetCharactersQuery = { __typename?: 'Root', allPeople?: { __typename?: 'PeopleConnection', edges?: Array<{ __typename?: 'PeopleEdge', node?: { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null } | null } | null> | null } | null };
+
+export const PersonItemFragmentDoc = gql`
+    fragment PersonItem on Person {
+  id
+  name
+  mass
+  homeworld {
+    name
+  }
+  species {
+    name
+  }
+  height
+  gender
+  eyeColor
+}
+    `;
+export const GetCharacterByIdDocument = gql`
+    query GetCharacterById($personID: ID) {
+  person(id: $personID) {
+    ...PersonItem
+  }
+}
+    ${PersonItemFragmentDoc}`;
+
+/**
+ * __useGetCharacterByIdQuery__
+ *
+ * To run a query within a React component, call `useGetCharacterByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCharacterByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCharacterByIdQuery({
+ *   variables: {
+ *      personID: // value for 'personID'
+ *   },
+ * });
+ */
+export function useGetCharacterByIdQuery(baseOptions?: Apollo.QueryHookOptions<GetCharacterByIdQuery, GetCharacterByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCharacterByIdQuery, GetCharacterByIdQueryVariables>(GetCharacterByIdDocument, options);
+      }
+export function useGetCharacterByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCharacterByIdQuery, GetCharacterByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCharacterByIdQuery, GetCharacterByIdQueryVariables>(GetCharacterByIdDocument, options);
+        }
+export type GetCharacterByIdQueryHookResult = ReturnType<typeof useGetCharacterByIdQuery>;
+export type GetCharacterByIdLazyQueryHookResult = ReturnType<typeof useGetCharacterByIdLazyQuery>;
+export type GetCharacterByIdQueryResult = Apollo.QueryResult<GetCharacterByIdQuery, GetCharacterByIdQueryVariables>;
+export const GetCharactersDocument = gql`
+    query GetCharacters($first: Int!) {
+  allPeople(first: $first) {
+    edges {
+      node {
+        ...PersonItem
+      }
+    }
+  }
+}
+    ${PersonItemFragmentDoc}`;
+
+/**
+ * __useGetCharactersQuery__
+ *
+ * To run a query within a React component, call `useGetCharactersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCharactersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCharactersQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *   },
+ * });
+ */
+export function useGetCharactersQuery(baseOptions: Apollo.QueryHookOptions<GetCharactersQuery, GetCharactersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCharactersQuery, GetCharactersQueryVariables>(GetCharactersDocument, options);
+      }
+export function useGetCharactersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCharactersQuery, GetCharactersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCharactersQuery, GetCharactersQueryVariables>(GetCharactersDocument, options);
+        }
+export type GetCharactersQueryHookResult = ReturnType<typeof useGetCharactersQuery>;
+export type GetCharactersLazyQueryHookResult = ReturnType<typeof useGetCharactersLazyQuery>;
+export type GetCharactersQueryResult = Apollo.QueryResult<GetCharactersQuery, GetCharactersQueryVariables>;

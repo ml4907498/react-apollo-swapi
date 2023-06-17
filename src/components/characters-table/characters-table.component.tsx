@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Table, Button, Space } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
@@ -8,6 +8,9 @@ import { Character } from '../../common/interfaces/character.interface';
 
 import FavoriteButton from '../favorite-button/favorite-button.component';
 import CharacterCard from '../character-card/character-card.component';
+
+import { getCharacters } from '../../hooks/characters/getCharacters';
+import { getCharacterByIdLazy } from '../../hooks/characters/getCharacterById';
 
 interface CharactersTableProps {
   characters: Character[];
@@ -31,11 +34,20 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
   const [ifShowCard, setIfShowCard] = useState<boolean>(false);
   const [currCharacter, setCurrCharacter] = useState<Character | null>(null);
 
-  const showCharacterCard = (id) => {
+  // const data = getCharacterById('cGVvcGxlOjE=');
+  // console.log(data);
+
+  // const [getCharacterById] = useGetCharacterByIdLazyQuery();
+  const getCharacterById = getCharacterByIdLazy();
+
+  const showCharacterCard = async (id) => {
+    setCurrCharacter(null);
     setIfShowCard(!ifShowCard);
 
-    //todo - get data from sever
-    setCurrCharacter(characters[id === 'test' ? 0 : 1]);
+    // get data from sever
+    const char = await getCharacterById(id);
+    console.log('lazy:', char);
+    setCurrCharacter(char);
   };
 
   const columns: ColumnsType<Character> = [
@@ -45,11 +57,14 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
       render: (text, record) => (
         <div className="row-container">
           <FavoriteButton
-            id={text}
+            id={record.id}
             favoriteList={favoritCharsList}
             setFavoritList={setFavoritCharsList}
           />
-          <a className="character-name" onClick={() => showCharacterCard(text)}>
+          <a
+            className="character-name"
+            onClick={() => showCharacterCard(record.id)}
+          >
             {text}
           </a>
         </div>
@@ -67,7 +82,7 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
       // specify the condition of filtering result
       // here is that finding the name started with `value`
       // onFilter: (value: string, record) => record.name.indexOf(value) === 0,
-      sorter: (a, b) => a.name.length - b.name.length,
+      // sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['descend'],
     },
     {
@@ -76,11 +91,15 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
       filters: [
         {
           text: 'Male',
-          value: 'Male',
+          value: 'male',
         },
         {
           text: 'Female',
-          value: 'Female',
+          value: 'female',
+        },
+        {
+          text: 'n/a',
+          value: 'n/a',
         },
       ],
       // specify the condition of filtering result
@@ -117,11 +136,23 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
       filters: [
         {
           text: 'Blue',
-          value: 'Blue',
+          value: 'blue',
         },
         {
           text: 'Brown',
-          value: 'Brown',
+          value: 'brown',
+        },
+        {
+          text: 'Yellow',
+          value: 'yellow',
+        },
+        {
+          text: 'Red',
+          value: 'red',
+        },
+        {
+          text: 'Blue-Gray',
+          value: 'blue-gray',
         },
       ],
       onFilter: (value, record: Character) =>
@@ -149,7 +180,11 @@ const CharactersTable: React.FC<CharactersTableProps> = ({
       <Space style={{ margin: 16 }}>
         <Button>Favorite Mod</Button>
       </Space>
-      <Table columns={columns} dataSource={characters} onChange={onChange} />
+      <Table
+        columns={columns}
+        dataSource={getCharacters()}
+        onChange={onChange}
+      />
 
       {ifShowCard && (
         <div className="character-card-overlay">

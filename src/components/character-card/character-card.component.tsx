@@ -35,8 +35,8 @@ const CharacterCard: React.FC<CharactersCardProps> = ({
       actions={[
         character && (
           <FavoriteButton
-            key="favorite"
-            id={character.name}
+            key={character.id}
+            id={character.id}
             favoriteList={favoritCharsList}
             setFavoritList={setFavoritCharsList}
           />

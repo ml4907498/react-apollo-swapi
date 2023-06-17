@@ -15,7 +15,7 @@ module.exports = {
         "sourceType": "module"
     },
     root: true,
-    ignorePatterns: ['.eslintrc.js', 'src/gql/'],
+    ignorePatterns: ['.eslintrc.js', 'src/gql/', '/src/graphql/__generated__'],
     "rules": {
     }
 }

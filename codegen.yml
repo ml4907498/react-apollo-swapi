@@ -1,0 +1,9 @@
+overwrite: true
+schema:  "https://swapi-graphql.netlify.app/.netlify/functions/index"
+documents: "**/*.{gql,graphql}"
+generates:
+  ./src/graphql/__generated__/schema.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"

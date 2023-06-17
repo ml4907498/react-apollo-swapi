@@ -1,0 +1,9 @@
+query GetCharacters($first: Int!) {
+    allPeople(first: $first) {
+      edges {
+        node {
+          ...PersonItem
+        }
+      }
+    }
+  }
