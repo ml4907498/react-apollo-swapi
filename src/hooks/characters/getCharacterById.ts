@@ -12,18 +12,14 @@ const processCharacterData = (
   const person = data && data.data?.person;
   const character = {
     ...person,
-    homeworld:
-      person?.homeworld?.name === undefined ? '-' : person?.homeworld?.name,
-    species: person?.species?.name === undefined ? '-' : person?.species?.name,
-    mass: person?.mass === undefined ? '-' : person?.mass,
-    gender: person?.gender === undefined ? '-' : person?.gender,
-    height: person?.height === undefined ? '-' : person?.height,
-    eyeColor: person?.eyeColor === undefined ? '-' : person?.eyeColor,
-    name: person?.name === undefined ? '-' : person?.name,
-    films:
-      person?.filmConnection?.films === undefined
-        ? '-'
-        : person?.filmConnection?.films?.map((v) => v?.title),
+    homeworld: person?.homeworld?.name ?? '-',
+    species: person?.species?.name ?? '-',
+    mass: person?.mass ?? '-',
+    gender: person?.gender ?? '-',
+    height: person?.height ?? '-',
+    eyeColor: person?.eyeColor ?? '-',
+    name: person?.name ?? '-',
+    films: person?.filmConnection?.films?.map((v) => v?.title) ?? '-',
   };
   return character as Character;
 };

@@ -1,0 +1,7 @@
+query getSpecies {
+  allSpecies{
+    species {
+      name
+    }
+  }
+}

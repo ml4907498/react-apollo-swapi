@@ -9,8 +9,15 @@ import { Character } from '../../common/interfaces/character.interface';
 import FavoriteButton from '../favorite-button/favorite-button.component';
 import CharacterCard from '../character-card/character-card.component';
 
-import { getCharactersLazy } from '../../hooks/characters/getCharacters';
+import {
+  getCharactersLazy,
+  processCharactersData,
+} from '../../hooks/characters/getCharacters';
 import { getCharacterByIdLazy } from '../../hooks/characters/getCharacterById';
+import {
+  useGetSpeciesQuery,
+  GetCharactersQuery,
+} from '../../graphql/__generated__/schema';
 
 // interface CharactersTableProps {
 //   characters: Character[];
@@ -29,6 +36,7 @@ const onChange: TableProps<Character>['onChange'] = (
 const CharactersTable: React.FC = () => {
   const [ifShowCard, setIfShowCard] = useState<boolean>(false);
   const [currCharacter, setCurrCharacter] = useState<Character | null>(null);
+  const [currPage, setCurrPage] = useState<number>(1);
   const [favoritCharsList, setFavoritCharsList] = useState<string[]>(
     JSON.parse(localStorage.getItem('favoriteItems') || '[]'),
   );
@@ -37,20 +45,33 @@ const CharactersTable: React.FC = () => {
   const [prevTableData, setPrevTableData] = useState<Character[]>([]);
 
   const getCharacterById = getCharacterByIdLazy();
-  const getCharacters = getCharactersLazy();
+  const { getCharacters, fetchMoreData, data } = getCharactersLazy();
+  const speciesData = useGetSpeciesQuery().data?.allSpecies?.species;
+
+  // const arr =
+  //   speciesData &&
+  //   speciesData.map((v) => ({
+  //     text: v?.name,
+  //     value: v?.name,
+  //   }));
 
   useEffect(() => {
-    const fetchData = async () => {
-      const initData = await getCharacters();
-      setCurrTableData(initData);
-      console.log('init', initData);
-    };
-    fetchData();
+    const processedData = processCharactersData(data);
+    setCurrTableData(processedData);
+  }, [data]);
+
+  useEffect(() => {
+    getCharacters();
   }, []);
 
   useEffect(() => {
     console.log('hhh');
   }, [currTableData]);
+
+  useEffect(() => {
+    localStorage.setItem('favoriteItems', JSON.stringify(favoritCharsList));
+    console.log(localStorage.getItem('favoriteItems'));
+  }, [favoritCharsList]);
 
   const showCharacterCard = async (id) => {
     setCurrCharacter(null);
@@ -82,11 +103,10 @@ const CharactersTable: React.FC = () => {
     setIfFavoriteOnly(!ifFavoriteOnly);
   };
 
-  useEffect(() => {
-    localStorage.setItem('favoriteItems', JSON.stringify(favoritCharsList));
-    console.log(localStorage.getItem('favoriteItems'));
-  }, [favoritCharsList]);
-
+  const fetchMore = () => {
+    fetchMoreData();
+    setCurrPage(currPage + 1);
+  };
   const columns: ColumnsType<Character> = [
     {
       title: 'Name',
@@ -106,21 +126,6 @@ const CharactersTable: React.FC = () => {
           </a>
         </div>
       ),
-      filters: [
-        {
-          text: 'Joe',
-          value: 'Joe',
-        },
-        {
-          text: 'Jim',
-          value: 'Jim',
-        },
-      ],
-      // specify the condition of filtering result
-      // here is that finding the name started with `value`
-      // onFilter: (value: string, record) => record.name.indexOf(value) === 0,
-      // sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['descend'],
     },
     {
       title: 'Gender',
@@ -139,32 +144,28 @@ const CharactersTable: React.FC = () => {
           value: 'n/a',
         },
       ],
-      // specify the condition of filtering result
-      // here is that finding the name started with `value`
       onFilter: (value, record: Character) =>
         record.gender.indexOf(value as string) === 0,
-      // sorter: (a, b) => a.gender.length - b.gender.length,
-      // sortDirections: ['descend'],
     },
     {
       title: 'Species',
       dataIndex: 'species',
-      // specify the condition of filtering result
-      // here is that finding the name started with `value`
-      // onFilter: (value: string, record) => record.species.indexOf(value) === 0,
-      // sorter: (a, b) => a.species.length - b.species.length,
-      // sortDirections: ['descend'],
+      filters:
+        speciesData &&
+        speciesData.map((v) => ({
+          text: v?.name,
+          value: v?.name,
+        })),
+      onFilter: (value: string, record) => record.species.indexOf(value) === 0,
     },
     {
       title: 'Height',
       dataIndex: 'height',
-      // defaultSortOrder: 'descend',
       sorter: (a, b) => a.height - b.height,
     },
     {
       title: 'Weight',
       dataIndex: 'mass',
-      // defaultSortOrder: 'descend',
       sorter: (a, b) => a.mass - b.mass,
     },
     {
@@ -212,12 +213,36 @@ const CharactersTable: React.FC = () => {
     },
   ];
 
+  const onPageChange = (page, pageSize) => {
+    // Handle page change event
+    console.log('Page:', page);
+    console.log('Page Size:', pageSize);
+    setCurrPage(page);
+  };
+
   return (
     <div className="table-container">
-      <Space style={{ margin: 16 }}>
-        <Button onClick={switchFavoriteOnly}>Favorite Mod</Button>
-      </Space>
-      <Table columns={columns} dataSource={currTableData} onChange={onChange} />
+      <div className="table-buttons">
+        <Space>
+          <Button onClick={switchFavoriteOnly}>Favorite Mod</Button>
+        </Space>
+        <Space>
+          <Button onClick={fetchMore}>More data</Button>
+        </Space>
+      </div>
+      {data && (
+        <Table
+          columns={columns}
+          dataSource={currTableData}
+          onChange={onChange}
+          pagination={{
+            current: currPage,
+            position: ['topCenter'],
+            onChange: onPageChange,
+          }}
+          scroll={{ y: 550 }}
+        />
+      )}
 
       {ifShowCard && (
         <div className="character-card-overlay">

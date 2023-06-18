@@ -2,6 +2,7 @@ import {
   useGetCharactersQuery,
   useGetCharactersLazyQuery,
   GetCharactersQueryHookResult,
+  GetCharactersQuery,
 } from '../../graphql/__generated__/schema';
 import { Character } from '../../common/interfaces/character.interface';
 
@@ -11,36 +12,69 @@ export const getCharacters = (): Character[] => {
 };
 
 export const getCharactersLazy = () => {
-  const [getCharacters] = useGetCharactersLazyQuery();
+  const [getData, data] = useGetCharactersLazyQuery();
+  // fetchMore({ variables: { after: 'YXJyYXljb25uZWN0aW9uOjk=' } }).then(
+  //   (data) => {
+  //     console.log('fetchmore:', data);
+  //   },
+  // );
 
-  return async (): Promise<Character[]> => {
-    const data = await getCharacters({ variables: { first: 10 } });
-    // console.log(data);
-    const charList = processCharactersData(data);
-    // console.log('lazy:', char);
-    return charList;
+  const getCharacters = () => {
+    getData({ variables: { first: 20, after: null } });
   };
+
+  const fetchMoreData = () => {
+    const endCursor = data.data?.allPeople?.pageInfo?.endCursor;
+    const hasNextPage = data.data?.allPeople?.pageInfo?.hasNextPage;
+    if (hasNextPage) {
+      data.fetchMore({
+        variables: {
+          first: 10,
+          after: endCursor,
+        },
+        updateQuery: (prevResult: GetCharactersQuery, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prevResult;
+
+          const resData = {
+            allPeople: {
+              ...prevResult.allPeople,
+              edges: [
+                ...(prevResult.allPeople?.edges ?? []),
+                ...(fetchMoreResult.allPeople?.edges ?? []),
+              ],
+              pageInfo: fetchMoreResult.allPeople?.pageInfo,
+            },
+          };
+
+          return resData as GetCharactersQuery;
+        },
+      });
+    } else {
+      console.log('No more data!');
+    }
+  };
+
+  return { getCharacters, fetchMoreData, data };
 };
 
-const processCharactersData = (
+export const processCharactersData = (
   data: GetCharactersQueryHookResult,
 ): Character[] => {
   const characters: Character[] = [];
 
   data &&
-    data.data?.allPeople?.edges?.map((e, i) => {
-      const node = e?.node;
-      // console.log(node);
+    data.data?.allPeople?.edges?.map((v) => {
+      const node = v?.node;
       const character = {
-        ...node,
-        homeworld:
-          node?.homeworld?.name === undefined ? '-' : node?.homeworld?.name,
-        species: node?.species?.name === undefined ? '-' : node?.species?.name,
-        mass: node?.mass === undefined ? '-' : node?.mass,
-        gender: node?.gender === undefined ? '-' : node?.gender,
-        height: node?.height === undefined ? '-' : node?.height,
-        eyeColor: node?.eyeColor === undefined ? '-' : node?.eyeColor,
-        name: node?.name === undefined ? '-' : node?.name,
+        id: node?.id,
+        homeworld: node?.homeworld?.name ?? '-',
+        species: node?.species?.name ?? '-',
+        mass: node?.mass ?? '-',
+        gender: node?.gender ?? '-',
+        height: node?.height ?? '-',
+        eyeColor: node?.eyeColor ?? '-',
+        name: node?.name ?? '-',
+        films: node?.filmConnection?.films?.map((v) => v?.title) ?? '-',
       };
       characters.push(character as Character);
     });

@@ -1,9 +1,13 @@
-query GetCharacters($first: Int!) {
-    allPeople(first: $first) {
+query GetCharacters($first: Int!, $after: String) {
+    allPeople(first: $first, after: $after) {
       edges {
         node {
           ...PersonItem
         }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }

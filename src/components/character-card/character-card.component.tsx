@@ -1,5 +1,5 @@
-import { SettingOutlined, CloseOutlined } from '@ant-design/icons';
-import { Avatar, Card, Skeleton, Switch } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
+import { Avatar, Card, Skeleton } from 'antd';
 import React, { useState, useEffect } from 'react';
 
 import FavoriteButton from '../favorite-button/favorite-button.component';

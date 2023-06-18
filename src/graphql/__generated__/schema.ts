@@ -1316,10 +1316,16 @@ export type GetCharacterByIdQuery = { __typename?: 'Root', person?: { __typename
 
 export type GetCharactersQueryVariables = Exact<{
   first: Scalars['Int']['input'];
+  after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type GetCharactersQuery = { __typename?: 'Root', allPeople?: { __typename?: 'PeopleConnection', edges?: Array<{ __typename?: 'PeopleEdge', node?: { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null, filmConnection?: { __typename?: 'PersonFilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null } | null } | null> | null } | null };
+export type GetCharactersQuery = { __typename?: 'Root', allPeople?: { __typename?: 'PeopleConnection', edges?: Array<{ __typename?: 'PeopleEdge', node?: { __typename?: 'Person', id: string, name?: string | null, mass?: number | null, height?: number | null, gender?: string | null, eyeColor?: string | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null, filmConnection?: { __typename?: 'PersonFilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null } | null } | null> | null, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } | null };
+
+export type GetSpeciesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSpeciesQuery = { __typename?: 'Root', allSpecies?: { __typename?: 'SpeciesConnection', species?: Array<{ __typename?: 'Species', name?: string | null } | null> | null } | null };
 
 export const PersonItemFragmentDoc = gql`
     fragment PersonItem on Person {
@@ -1378,12 +1384,16 @@ export type GetCharacterByIdQueryHookResult = ReturnType<typeof useGetCharacterB
 export type GetCharacterByIdLazyQueryHookResult = ReturnType<typeof useGetCharacterByIdLazyQuery>;
 export type GetCharacterByIdQueryResult = Apollo.QueryResult<GetCharacterByIdQuery, GetCharacterByIdQueryVariables>;
 export const GetCharactersDocument = gql`
-    query GetCharacters($first: Int!) {
-  allPeople(first: $first) {
+    query GetCharacters($first: Int!, $after: String) {
+  allPeople(first: $first, after: $after) {
     edges {
       node {
         ...PersonItem
       }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
     }
   }
 }
@@ -1402,6 +1412,7 @@ export const GetCharactersDocument = gql`
  * const { data, loading, error } = useGetCharactersQuery({
  *   variables: {
  *      first: // value for 'first'
+ *      after: // value for 'after'
  *   },
  * });
  */
@@ -1416,3 +1427,39 @@ export function useGetCharactersLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetCharactersQueryHookResult = ReturnType<typeof useGetCharactersQuery>;
 export type GetCharactersLazyQueryHookResult = ReturnType<typeof useGetCharactersLazyQuery>;
 export type GetCharactersQueryResult = Apollo.QueryResult<GetCharactersQuery, GetCharactersQueryVariables>;
+export const GetSpeciesDocument = gql`
+    query getSpecies {
+  allSpecies {
+    species {
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSpeciesQuery__
+ *
+ * To run a query within a React component, call `useGetSpeciesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSpeciesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSpeciesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSpeciesQuery(baseOptions?: Apollo.QueryHookOptions<GetSpeciesQuery, GetSpeciesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSpeciesQuery, GetSpeciesQueryVariables>(GetSpeciesDocument, options);
+      }
+export function useGetSpeciesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSpeciesQuery, GetSpeciesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSpeciesQuery, GetSpeciesQueryVariables>(GetSpeciesDocument, options);
+        }
+export type GetSpeciesQueryHookResult = ReturnType<typeof useGetSpeciesQuery>;
+export type GetSpeciesLazyQueryHookResult = ReturnType<typeof useGetSpeciesLazyQuery>;
+export type GetSpeciesQueryResult = Apollo.QueryResult<GetSpeciesQuery, GetSpeciesQueryVariables>;
