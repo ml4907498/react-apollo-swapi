@@ -19,7 +19,7 @@ yarn start
 ## Codegen
 
 ```bash
-# Get the schems by Graphql Codegen 
+# Generate the schemas by Graphql Codegen 
 yarn run codegen
 ```
 
