@@ -62,11 +62,11 @@ const CharactersTable: React.FC = () => {
   // Save favoriteItems List in localstorage
   useEffect(() => {
     localStorage.setItem('favoriteItems', JSON.stringify(favoritCharsList));
-    console.log(localStorage.getItem('favoriteItems'));
+    // console.log(localStorage.getItem('favoriteItems'));
   }, [favoritCharsList]);
 
   // Show the character preview card
-  const showCharacterCard = async (id) => {
+  const showCharacterCard = async (id: string) => {
     setCurrCharacter(null);
     setIfShowCard(!ifShowCard);
 
@@ -210,7 +210,7 @@ const CharactersTable: React.FC = () => {
     },
   ];
 
-  const onPageChange = (page, pageSize) => {
+  const onPageChange = (page: number, pageSize: number) => {
     // Handle page change event
     console.log('Page:', page);
     console.log('Page Size:', pageSize);
@@ -236,7 +236,10 @@ const CharactersTable: React.FC = () => {
       {data && (
         <Table
           columns={columns}
-          dataSource={currTableData}
+          dataSource={currTableData.map((item, index) => ({
+            ...item,
+            key: index.toString(), // Add a unique key prop for each item
+          }))}
           onChange={onChange}
           pagination={{
             current: currPage,
