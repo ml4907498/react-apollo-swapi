@@ -13,6 +13,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   favoriteList,
   setFavoritList,
 }: FavoriteButtonProps) => {
+  // Check if the current item is in the favorite list
   const ifFavorite = (id: string, favoriteList: string[]): boolean => {
     return favoriteList.includes(id);
   };

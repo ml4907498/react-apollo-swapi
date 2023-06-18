@@ -13,16 +13,13 @@ export const getCharacters = (): Character[] => {
 
 export const getCharactersLazy = () => {
   const [getData, data] = useGetCharactersLazyQuery();
-  // fetchMore({ variables: { after: 'YXJyYXljb25uZWN0aW9uOjk=' } }).then(
-  //   (data) => {
-  //     console.log('fetchmore:', data);
-  //   },
-  // );
 
+  // query the init data
   const getCharacters = () => {
     getData({ variables: { first: 20, after: null } });
   };
 
+  // fetch more data based on cursor
   const fetchMoreData = () => {
     const endCursor = data.data?.allPeople?.pageInfo?.endCursor;
     const hasNextPage = data.data?.allPeople?.pageInfo?.hasNextPage;

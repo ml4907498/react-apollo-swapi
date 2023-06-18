@@ -1,29 +1,25 @@
 import React, { useEffect, useState } from 'react';
 
-import { Table, Button, Space } from 'antd';
-import type { ColumnsType, TableProps } from 'antd/es/table';
-
 import './characters-table.component.css';
 import { Character } from '../../common/interfaces/character.interface';
 
+// Components
+import { Table, Button, Space } from 'antd';
+import type { ColumnsType, TableProps } from 'antd/es/table';
+
 import FavoriteButton from '../favorite-button/favorite-button.component';
 import CharacterCard from '../character-card/character-card.component';
+import { ColumnFilterItem } from 'antd/es/table/interface';
 
+// Hooks
 import {
   getCharactersLazy,
   processCharactersData,
 } from '../../hooks/characters/getCharacters';
 import { getCharacterByIdLazy } from '../../hooks/characters/getCharacterById';
-import {
-  useGetSpeciesQuery,
-  GetCharactersQuery,
-} from '../../graphql/__generated__/schema';
+import { useGetSpeciesQuery } from '../../graphql/__generated__/schema';
 
-// interface CharactersTableProps {
-//   characters: Character[];
-//   favoritCharsList: string[];
-//   setFavoritCharsList: (newValue: string[]) => void;
-// }
+// onChange for Table component
 const onChange: TableProps<Character>['onChange'] = (
   pagination,
   filters,
@@ -35,62 +31,58 @@ const onChange: TableProps<Character>['onChange'] = (
 
 const CharactersTable: React.FC = () => {
   const [ifShowCard, setIfShowCard] = useState<boolean>(false);
+  const [ifFavoriteOnly, setIfFavoriteOnly] = useState<boolean>(false);
+
   const [currCharacter, setCurrCharacter] = useState<Character | null>(null);
+  const [currTableData, setCurrTableData] = useState<Character[]>([]);
+  const [prevTableData, setPrevTableData] = useState<Character[]>([]);
   const [currPage, setCurrPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(2);
+
   const [favoritCharsList, setFavoritCharsList] = useState<string[]>(
     JSON.parse(localStorage.getItem('favoriteItems') || '[]'),
   );
-  const [ifFavoriteOnly, setIfFavoriteOnly] = useState<boolean>(false);
-  const [currTableData, setCurrTableData] = useState<Character[]>([]);
-  const [prevTableData, setPrevTableData] = useState<Character[]>([]);
 
+  // Wrapped lazy query
   const getCharacterById = getCharacterByIdLazy();
   const { getCharacters, fetchMoreData, data } = getCharactersLazy();
   const speciesData = useGetSpeciesQuery().data?.allSpecies?.species;
 
-  // const arr =
-  //   speciesData &&
-  //   speciesData.map((v) => ({
-  //     text: v?.name,
-  //     value: v?.name,
-  //   }));
+  // Get init data
+  useEffect(() => {
+    getCharacters();
+  }, []);
 
+  // Update the data
   useEffect(() => {
     const processedData = processCharactersData(data);
     setCurrTableData(processedData);
   }, [data]);
 
-  useEffect(() => {
-    getCharacters();
-  }, []);
-
-  useEffect(() => {
-    console.log('hhh');
-  }, [currTableData]);
-
+  // Save favoriteItems List in localstorage
   useEffect(() => {
     localStorage.setItem('favoriteItems', JSON.stringify(favoritCharsList));
     console.log(localStorage.getItem('favoriteItems'));
   }, [favoritCharsList]);
 
+  // Show the character preview card
   const showCharacterCard = async (id) => {
     setCurrCharacter(null);
     setIfShowCard(!ifShowCard);
 
-    // get data from sever
+    // Get the data from server
     const char = await getCharacterById(id);
-    console.log('lazy:', char);
     setCurrCharacter(char);
   };
 
+  // Switch the favorite mode
   const switchFavoriteOnly = () => {
+    // if the current mode is not the favorite mode
     if (!ifFavoriteOnly) {
       const favoritChars: Character[] = [];
       const promises = favoritCharsList.map(async (id) => {
         const char = await getCharacterById(id);
         favoritChars.push(char);
-        console.log(favoritChars);
-        console.log(ifFavoriteOnly);
       });
       Promise.all(promises).then(() => {
         setPrevTableData(currTableData);
@@ -103,10 +95,14 @@ const CharactersTable: React.FC = () => {
     setIfFavoriteOnly(!ifFavoriteOnly);
   };
 
+  // Fetch more data and set the current page.
   const fetchMore = () => {
     fetchMoreData();
-    setCurrPage(currPage + 1);
+    setPageSize(pageSize + 1);
+    setCurrPage(pageSize + 1);
   };
+
+  // Columns config for Table
   const columns: ColumnsType<Character> = [
     {
       title: 'Name',
@@ -145,28 +141,29 @@ const CharactersTable: React.FC = () => {
         },
       ],
       onFilter: (value, record: Character) =>
-        record.gender.indexOf(value as string) === 0,
+        record.gender?.indexOf(value as string) === 0,
     },
     {
       title: 'Species',
       dataIndex: 'species',
-      filters:
-        speciesData &&
-        speciesData.map((v) => ({
-          text: v?.name,
-          value: v?.name,
-        })),
-      onFilter: (value: string, record) => record.species.indexOf(value) === 0,
+      filters: speciesData
+        ? (speciesData.map((v) => ({
+            text: v?.name ?? null,
+            value: v?.name ?? null,
+          })) as ColumnFilterItem[])
+        : undefined,
+      onFilter: (value, record: Character) =>
+        record.species?.indexOf(value as string) === 0,
     },
     {
       title: 'Height',
       dataIndex: 'height',
-      sorter: (a, b) => a.height - b.height,
+      sorter: (a, b) => (a?.height ?? 0) - (b?.height ?? 0),
     },
     {
       title: 'Weight',
       dataIndex: 'mass',
-      sorter: (a, b) => a.mass - b.mass,
+      sorter: (a, b) => (a?.mass ?? 0) - (b?.mass ?? 0),
     },
     {
       title: 'Eye Color',
@@ -194,7 +191,7 @@ const CharactersTable: React.FC = () => {
         },
       ],
       onFilter: (value, record: Character) =>
-        record.eyeColor.indexOf(value as string) === 0,
+        record.eyeColor?.indexOf(value as string) === 0,
     },
     {
       title: 'Home Planet',
@@ -217,6 +214,7 @@ const CharactersTable: React.FC = () => {
     // Handle page change event
     console.log('Page:', page);
     console.log('Page Size:', pageSize);
+    setPageSize(pageSize);
     setCurrPage(page);
   };
 
@@ -224,7 +222,12 @@ const CharactersTable: React.FC = () => {
     <div className="table-container">
       <div className="table-buttons">
         <Space>
-          <Button onClick={switchFavoriteOnly}>Favorite Mod</Button>
+          <Button
+            className={ifFavoriteOnly ? 'favorite-btn' : ''}
+            onClick={switchFavoriteOnly}
+          >
+            Favorite Mod
+          </Button>
         </Space>
         <Space>
           <Button onClick={fetchMore}>More data</Button>
