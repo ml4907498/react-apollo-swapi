@@ -1,6 +1,6 @@
 # React-Apollo-SWAPI
 
-This React app utilizes Apollo and Typescript to create a comprehensive reference book for Star Wars characters based on [Star Wars ](https://studio.apollographql.com/public/star-wars-swapi/variant/current/home)GraphQL AP.
+This React app utilizes Apollo and Typescript to create a comprehensive reference book for Star Wars characters based on [Star Wars ](https://studio.apollographql.com/public/star-wars-swapi/variant/current/home)GraphQL API.
 
 ## Start
 
@@ -23,8 +23,3 @@ yarn start
 yarn run codegen
 ```
 
-
-
-## License
-
-This project is licensed under the MIT License.
