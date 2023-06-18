@@ -1438,7 +1438,7 @@
     "@graphql-codegen/plugin-helpers" "^5.0.0"
     tslib "~2.5.0"
 
-"@graphql-codegen/cli@^4.0.1":
+"@graphql-codegen/cli@4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-4.0.1.tgz#2bd494d55aaef0dfe86eefe1fa42bff81f5147fe"
   integrity sha512-/H4imnGOl3hoPXLKmIiGUnXpmBmeIClSZie/YHDzD5N59cZlGGJlIOOrUlOTDpJx5JNU1MTQcRjyTToOYM5IfA==
@@ -1479,7 +1479,7 @@
     yaml "^1.10.0"
     yargs "^17.0.0"
 
-"@graphql-codegen/client-preset@^4.0.0":
+"@graphql-codegen/client-preset@4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/client-preset/-/client-preset-4.0.0.tgz#4c271d2abadfba6cdfdb82127b8730f270f38295"
   integrity sha512-A96Vc+ZHMoBTO7bH/I/iIqCBsDiXblKqhyMQsSfq79Muvtmhjx4E9Xt4s++/zpBbe4M+46EYLlde2ZIrymSqDw==
@@ -1517,6 +1517,15 @@
     "@graphql-codegen/visitor-plugin-common" "4.0.0"
     "@graphql-tools/utils" "^10.0.0"
     auto-bind "~4.0.0"
+    tslib "~2.5.0"
+
+"@graphql-codegen/introspection@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/introspection/-/introspection-4.0.0.tgz#1d851d8fb38efbeaf45128456e3010a16e6c9708"
+  integrity sha512-t9g3AkK99dfHblMWtG4ynUM9+A7JrWq5110zSpNV2wlSnv0+bRKagDW8gozwgXfR5i1IIG8QDjJZ6VgXQVqCZw==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^5.0.0"
+    "@graphql-codegen/visitor-plugin-common" "^4.0.0"
     tslib "~2.5.0"
 
 "@graphql-codegen/plugin-helpers@^2.7.2":
